@@ -1,0 +1,5 @@
+This code was inspired by the xmp.py example written by Jeff Epler and Csaba
+Henk. Thank you!
+
+Thanks to the folks who wrote FUSE and thanks to Marko Kreen for putting
+together rarfile!

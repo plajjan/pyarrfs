@@ -1,0 +1,173 @@
+#!/usr/bin/env python
+#
+# Copyright (c) 2010 Kristian Larsson <kristian@spritelink.net>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#
+# Check out http://labs.spritelink.net/yarrfs for the latest version of this 
+# software.
+#
+
+import os, sys
+from errno import *
+from stat import *
+import fcntl
+import re
+import stat
+
+import fuse
+import rarfile
+
+fuse.fuse_python_api = (0, 2)
+
+fuse.feature_assert('stateful_files', 'has_init')
+
+import syslog
+
+class Pyarr(fuse.Fuse):
+    def __init__(self, *args, **kw):
+        fuse.Fuse.__init__(self, *args, **kw)
+        self.root = '/'
+
+    def fsinit(self):
+        os.chdir(self.root)
+
+
+
+
+    def access(self, path, mode):
+        # FIXME: When is this really used?
+        if mode == os.W_OK:
+            return -EACCES
+        if not os.access("." + path, mode):
+            return -EACCES
+
+    def getattr(self, path):
+        if re.match('.*\.rar$', path):
+            original_stat = os.lstat("." + path)
+            fake_stat = fuse.Stat()
+            fake_stat.st_mode = stat.S_IFDIR | 0755
+            fake_stat.st_ino = 0
+            fake_stat.st_dev = 0
+            fake_stat.st_nlink = 2
+            fake_stat.st_uid = original_stat.st_uid
+            fake_stat.st_gid = original_stat.st_gid
+            fake_stat.st_size = 4096
+            fake_stat.st_atime = original_stat.st_atime
+            fake_stat.st_mtime = original_stat.st_mtime
+            fake_stat.st_ctime = original_stat.st_ctime
+            return fake_stat
+
+        elif re.match('.*\.rar/.+', path):
+            m = re.match('(.*\.rar)/(.+)', path)
+            rar_file = m.group(1)
+            rar_path = m.group(2)
+
+            original_stat = os.lstat("." + rar_file)
+            rf = rarfile.RarFile(rar_file)
+            rfi = rf.getinfo(rar_path)
+
+            fake_stat = fuse.Stat()
+            fake_stat.st_mode = stat.S_IFREG | 0444
+            fake_stat.st_ino = 0
+            fake_stat.st_dev = 0
+            fake_stat.st_nlink = 1
+            fake_stat.st_uid = original_stat.st_uid
+            fake_stat.st_gid = original_stat.st_gid
+            fake_stat.st_size = rfi.file_size
+            fake_stat.st_atime = original_stat.st_atime
+
+            import datetime
+            (rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second) = rfi.date_time
+            rft_time = datetime.datetime(rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second)
+            fake_stat.st_atime = int(rft_time.strftime('%s'))
+            fake_stat.st_mtime = int(rft_time.strftime('%s'))
+            fake_stat.st_ctime = int(rft_time.strftime('%s'))
+            return fake_stat
+     
+        return os.lstat("." + path)
+
+    # get a directory listing
+    # doesn't need changes in yarrfs compatibility mode
+    def readdir(self, path, offset):
+        yield fuse.Direntry('.')
+        yield fuse.Direntry('..')
+
+        if re.match('.*\.rar$', path):
+            rf = rarfile.RarFile(path)
+            for e in rf.namelist():
+                yield fuse.Direntry(str(e))
+        else:
+            for e in os.listdir("." + path):
+                self.dPrint("normal dir, yield: " + e)
+                yield fuse.Direntry(e)
+
+    def readlink(self, path):
+        return os.readlink("." + path)
+
+    def statfs(self):
+        return os.statvfs(".")
+
+
+    class PyarrFile(object):
+        def __init__(self, path, flags, *mode):
+            m = re.match('(.*\.rar)/(.+)', path)
+            rar_file = m.group(1)
+            rar_path = m.group(2)
+            rf = rarfile.RarFile(rar_file)
+            self.file = rf.open(rar_path)
+            self.fd = 0
+
+        def read(self, length, offset):
+            return self.file.read(length)
+
+        def release(self, flags):
+            self.file.close()
+
+
+    def main(self, *a, **kw):
+        self.file_class = self.PyarrFile
+        return fuse.Fuse.main(self, *a, **kw)
+
+
+def main():
+    usage = """
+PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to be treated as directories and files within those RAR archives to be read as regular files.
+
+""" + fuse.Fuse.fusage
+
+    server = Pyarr(version="PyarrFS 0.1",
+                 usage=usage)
+
+    server.multithreaded = False
+    server.parse(values=server, errex=1)
+
+    server.main()
+
+
+
+
+if __name__ == '__main__':
+    main()
+
+
+#
+# vim: et ts=4 :
+#
