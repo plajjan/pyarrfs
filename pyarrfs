@@ -116,7 +116,6 @@ class Pyarr(fuse.Fuse):
                 yield fuse.Direntry(str(e))
         else:
             for e in os.listdir("." + path):
-                self.dPrint("normal dir, yield: " + e)
                 yield fuse.Direntry(e)
 
     def readlink(self, path):
