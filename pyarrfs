@@ -40,6 +40,11 @@ fuse.fuse_python_api = (0, 2)
 fuse.feature_assert('stateful_files', 'has_init')
 
 import syslog
+# debug print
+def dPrint(message):
+    debug = 1
+    if debug is not None and debug > 0:
+        syslog.syslog(message)
 
 class Pyarr(fuse.Fuse):
     def __init__(self, *args, **kw):
@@ -53,6 +58,7 @@ class Pyarr(fuse.Fuse):
 
 
     def access(self, path, mode):
+        dPrint("access -- " + path)
         # FIXME: When is this really used?
         if mode == os.W_OK:
             return -EACCES
@@ -60,7 +66,9 @@ class Pyarr(fuse.Fuse):
             return -EACCES
 
     def getattr(self, path):
+        dPrint("getattr -- " + str(path))
         if re.match('.*\.rar$', path):
+            dPrint("getattr: on rar archive for path " + str(path))
             original_stat = os.lstat("." + path)
             fake_stat = fuse.Stat()
             fake_stat.st_mode = stat.S_IFDIR | 0755
@@ -73,9 +81,11 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_atime = original_stat.st_atime
             fake_stat.st_mtime = original_stat.st_mtime
             fake_stat.st_ctime = original_stat.st_ctime
+            dPrint("getattr: returning fake_stat for " + str(path))
             return fake_stat
 
         elif re.match('.*\.rar/.+', path):
+            dPrint("getattr: we need to check inside rar archive for path " + str(path))
             m = re.match('(.*\.rar)/(.+)', path)
             rar_file = m.group(1)
             rar_path = m.group(2)
@@ -100,28 +110,35 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_atime = int(rft_time.strftime('%s'))
             fake_stat.st_mtime = int(rft_time.strftime('%s'))
             fake_stat.st_ctime = int(rft_time.strftime('%s'))
+            dPrint("getattr: returning fake_stat for " + str(rar_path) + " inside rar " + str(rar_file))
             return fake_stat
      
+        dPrint("getattr: returning normal os.lstat() for path " + str(path))
         return os.lstat("." + path)
 
     # get a directory listing
     # doesn't need changes in yarrfs compatibility mode
     def readdir(self, path, offset):
+        dPrint("readdir -- path: " + str(path) + "  offset: " + str(offset) )
         yield fuse.Direntry('.')
         yield fuse.Direntry('..')
 
         if re.match('.*\.rar$', path):
+            dPrint("readdir: on rar archive, using rarfile")
             rf = rarfile.RarFile(path)
             for e in rf.namelist():
                 yield fuse.Direntry(str(e))
         else:
+            dPrint("readdir: normal dir, using os.listdir()")
             for e in os.listdir("." + path):
                 yield fuse.Direntry(e)
 
     def readlink(self, path):
+        dPrint("readlink -- " + path)
         return os.readlink("." + path)
 
     def statfs(self):
+        dPrint("statfs -- " + path)
         return os.statvfs(".")
 
 
