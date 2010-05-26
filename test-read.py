@@ -26,6 +26,7 @@ class PyarrCheck(unittest.TestCase):
 		self.mkdir(self.testfiledir)
 		self.mkdir(self.testarchivedir)
 
+#		os.system('fusermount -u ' + self.rarmntdir)
 		try:
 			os.system(self.pyarrpath + ' ' + self.rarmntdir)
 		except:
@@ -49,7 +50,7 @@ class PyarrCheck(unittest.TestCase):
 		for file in files:
 			filepath = os.path.join(self.testfiledir, file)
 			#cmd = 'rar a -inul -ep ' + os.path.join(self.testarchivedir, rarfile) + ' ' + filepath
-			cmd = 'rar a -inul -ep ' + os.path.join(self.testarchivedir, rarfile) + ' ' + filepath
+			cmd = 'rar a -inul -ep -m0 ' + os.path.join(self.testarchivedir, rarfile) + ' ' + filepath
 			os.system(cmd)
 
 
