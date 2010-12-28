@@ -7,8 +7,6 @@ import os, sys
 
 
 class PyarrCheck(unittest.TestCase):
-	files = [ [ './rarmnt/home/kll/Zathura.DVDRip.XviD-DiAMOND/dmd-zathura.rar/dmd-zathura.avi', '/home/kll/Zathura.DVDRip.XviD-DiAMOND/dmd-zathura.avi' ]
-			]
 
 	def setUp(self):
 		self.scriptdir = os.path.realpath(os.path.dirname(sys.argv[0]))
@@ -55,8 +53,6 @@ class PyarrCheck(unittest.TestCase):
 
 
 	def tearDown(self):
-		import time
-		time.sleep(1)
 		os.system('fusermount -z -u ' + self.rarmntdir)
 		import shutil
 #		shutil.rmtree(self.testdir)
@@ -68,19 +64,31 @@ class PyarrCheck(unittest.TestCase):
 		return result
 
 
+	def generate_content_code(self, size = 0):
+		# round off size to nearest number divisible by 10
+		ns = size - ((size + 10) % 10)
+		result = ''
+		for i in xrange(0, size):
+			result += "$%09d" % (i)
+		return result
+
+
+
 
 	def test_sequential_read(self):
-		filedata = [
-				[ 'test1',
-					'this is testfile1 bla bla bla bla bla\n' ],
-				[ 'test2',
-					'crap crap crap crap\n' ]
-				]
-		filedata.append(['test3', self.generate_content(200000)])
+		filedata = []
+#		filedata = [
+#				[ 'test1',
+#					'this is testfile1 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla\n' ],
+#				[ 'test2',
+#					'crap crap crap crap\n' ]
+#				]
+#		filedata.append(['test3', self.generate_content(200000)])
+		filedata.append(['test3', self.generate_content_code(200000)])
+#		filedata.append(['test3', self.generate_content(200000)])
 		files = []
 		for entry in filedata:
 			files.append(entry[0])
-
 
 		self.create_test_files(filedata)
 		rar_archive = 'testarchive1.rar'
@@ -89,13 +97,31 @@ class PyarrCheck(unittest.TestCase):
 			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
 			self.verify_read_sequential(rar_file, raw_file)
+			self.verify_read_from_offset(rar_file, raw_file, 3)
 			self.verify_read_random(rar_file, raw_file)
 
 	def verify_read_sequential(self, rar_file, raw_file):
 		file_size = os.path.getsize(raw_file)
+		rawf = open(raw_file, 'r')
+		rarf = open(rar_file, 'r')
+
+		rawf.seek(0)
+		rarf.seek(0)
+		read_bytes = 1000
+		print "RAW:", rawf.read(read_bytes)
+		print "RAR:", rarf.read(read_bytes)
+
+		self.assertEqual(rarf.read(read_bytes), rawf.read(read_bytes), 'mismatch in sequential read')
+		rarf.close()
+		rawf.close()
+
+	def verify_read_from_offset(self, rar_file, raw_file, offset = 0):
+		file_size = os.path.getsize(raw_file)
 		rarf = open(rar_file, 'r')
 		rawf = open(raw_file, 'r')
-		self.assertEqual(rarf.read(), rawf.read(), 'mismatch in sequential read')
+		rarf.seek(offset)
+		rawf.seek(offset)
+		self.assertEqual(rarf.read(), rawf.read(), 'mismatch in offset read from ' + str(offset))
 		rarf.close()
 		rawf.close()
 
@@ -103,11 +129,25 @@ class PyarrCheck(unittest.TestCase):
 		file_size = os.path.getsize(raw_file)
 		rarf = open(rar_file, 'r')
 		rawf = open(raw_file, 'r')
-		for i in xrange(0, file_size):
-			byte = random.randrange(0, file_size)
+		print "RAW file: " + raw_file
+		print "RAR file: " + rar_file
+		read_bytes = 10
+		for i in xrange(0, 10000):
+			# get random number
+			rb = random.randrange(0, file_size-10)
+			# align on 10 char boundary
+			byte = rb - ((rb + 10) % 10)
+			# make exception if test file is really small
+			if file_size <= 10:
+				byte = 0
+				read_bytes = file_size
+
 			rawf.seek(byte)
 			rarf.seek(byte)
-			self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
+#			print "Offset %10d: RAW - RAR: %s %s" % ( byte, rawf.read(read_bytes), str(rarf.read(read_bytes)) )
+			rawf.seek(byte)
+			rarf.seek(byte)
+			self.assertEqual(rarf.read(read_bytes), rawf.read(read_bytes), 'mismatch in random read')
 		rarf.close()
 		rawf.close()
 
