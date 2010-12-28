@@ -91,7 +91,7 @@ class Pyarr(fuse.Fuse):
             rar_path = m.group(2)
 
             original_stat = os.lstat("." + rar_file)
-            rf = rarfile.RarFile(rar_file, 'r', None, None, False)
+            rf = rarfile.RarFile(rar_file)
             rfi = rf.getinfo(rar_path)
 
             fake_stat = fuse.Stat()
@@ -125,7 +125,7 @@ class Pyarr(fuse.Fuse):
 
         if re.match('.*\.rar$', path):
             dPrint("readdir: on rar archive, using rarfile")
-            rf = rarfile.RarFile(path, 'r', None, None, False)
+            rf = rarfile.RarFile(path)
             for e in rf.namelist():
                 yield fuse.Direntry(str(e))
         else:
@@ -147,7 +147,7 @@ class Pyarr(fuse.Fuse):
             m = re.match('(.*\.rar)/(.+)', path)
             self.rar_file = m.group(1)
             self.rar_path = m.group(2)
-            self.rf = rarfile.RarFile(self.rar_file, 'r', None, None, False)
+            self.rf = rarfile.RarFile(self.rar_file)
             self.file = self.rf.open(self.rar_path)
             self.fd = 0
 
