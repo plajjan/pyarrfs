@@ -57,7 +57,7 @@ class PyarrCheck(unittest.TestCase):
 	def tearDown(self):
 		import time
 		time.sleep(1)
-		os.system('fusermount -u ' + self.rarmntdir)
+		os.system('fusermount -z -u ' + self.rarmntdir)
 		import shutil
 #		shutil.rmtree(self.testdir)
 
