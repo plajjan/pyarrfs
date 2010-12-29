@@ -104,14 +104,7 @@ class PyarrCheck(unittest.TestCase):
 		file_size = os.path.getsize(raw_file)
 		rawf = open(raw_file, 'r')
 		rarf = open(rar_file, 'r')
-
-		rawf.seek(0)
-		rarf.seek(0)
-		read_bytes = 1000
-		print "RAW:", rawf.read(read_bytes)
-		print "RAR:", rarf.read(read_bytes)
-
-		self.assertEqual(rarf.read(read_bytes), rawf.read(read_bytes), 'mismatch in sequential read')
+		self.assertEqual(rarf.read(), rawf.read(), 'mismatch in sequential read')
 		rarf.close()
 		rawf.close()
 
@@ -129,8 +122,6 @@ class PyarrCheck(unittest.TestCase):
 		file_size = os.path.getsize(raw_file)
 		rarf = open(rar_file, 'r')
 		rawf = open(raw_file, 'r')
-		print "RAW file: " + raw_file
-		print "RAR file: " + rar_file
 		read_bytes = 10
 		for i in xrange(0, 10000):
 			# get random number
