@@ -144,9 +144,24 @@ class Pyarr(fuse.Fuse):
 
     class PyarrFile(object):
         def __init__(self, path, flags, *mode):
-            # TODO: evaluate what direct_io / keep_cache does
+            # Enabling direct_io disables the kernels page cache.
+            # Since the content of our RAR files should be pretty stable, we do
+            # NOT enable this, ie we allow the kernel to cache all data.
+            # This means we get both the .rar file and the file inside the RAR 
+            # archive in the block cache which might affect performance 
+            # negatively. On the other hand, the kernel could purge the .rar 
+            # file from its block cache and just keep the inside file. 
+            # It's likely mostly a performance thing. I'm guessing it's good
+            # to let the kernel decide on what to cache and what not too, so we
+            # set it to False. Some benchmarking should really be done to prove
+            # either setting is better than the other
             self.direct_io = False
-            self.keep_cache = False
+            # keep_cache means the kernel is allowed to cache content of a file
+            # after its been closed an reopened. You only want to disable this
+            # if the content of the file might change without the kernel knowing
+            # about it, which would be typical for a networked file system.
+            # That's not the case with PyarrFS so we enable it.
+            self.keep_cache = True
             m = re.match('(.*\.rar)/(.+)', path)
             self.rar_file = m.group(1)
             self.rar_path = m.group(2)
