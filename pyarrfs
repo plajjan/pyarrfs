@@ -42,7 +42,7 @@ fuse.feature_assert('stateful_files', 'has_init')
 import syslog
 # debug print
 def dPrint(message):
-    debug = 1
+    debug = 0
     if debug is not None and debug > 0:
         syslog.syslog(message)
 
