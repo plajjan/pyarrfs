@@ -92,43 +92,33 @@ class PyarrCheck(unittest.TestCase):
 
 
 
-	def test_sequential_read(self):
+	def test_read_sequential(self):
 		for file in self.files:
 			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
-			self.verify_read_sequential(rar_file, raw_file)
-			self.verify_read_from_offset(rar_file, raw_file, 3)
-			self.verify_read_random_from_start(rar_file, raw_file)
 
-	def verify_read_sequential(self, rar_file, raw_file):
-		file_size = os.path.getsize(raw_file)
-		rawf = open(raw_file, 'r')
-		rarf = open(rar_file, 'r')
-		self.assertEqual(rarf.read(), rawf.read(), 'mismatch in sequential read')
-		rarf.close()
-		rawf.close()
+			rawf = open(raw_file, 'r')
+			rarf = open(rar_file, 'r')
+			self.assertEqual(rarf.read(), rawf.read(), 'mismatch in sequential read')
+			rarf.close()
+			rawf.close()
 
-	def verify_read_from_offset(self, rar_file, raw_file, offset = 0):
-		file_size = os.path.getsize(raw_file)
-		rarf = open(rar_file, 'r')
-		rawf = open(raw_file, 'r')
-		rarf.seek(offset)
-		rawf.seek(offset)
-		self.assertEqual(rarf.read(), rawf.read(), 'mismatch in offset read from ' + str(offset))
-		rarf.close()
-		rawf.close()
 
-	def verify_read_random_from_start(self, rar_file, raw_file):
-		file_size = os.path.getsize(raw_file)
-		rarf = open(rar_file, 'r')
-		rawf = open(raw_file, 'r')
-		for i in xrange(0, 10000):
-			byte = random.randrange(0, file_size)
-			rawf.seek(byte)
-			rarf.seek(byte)
-			self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
-		rarf.close()
-		rawf.close()
+	def test_read_random_from_start(self):
+		for file in self.files:
+			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
+			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
+
+			file_size = os.path.getsize(raw_file)
+			rarf = open(rar_file, 'r')
+			rawf = open(raw_file, 'r')
+			for i in xrange(0, 10000):
+				byte = random.randrange(0, file_size)
+				rawf.seek(byte)
+				rarf.seek(byte)
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
+			rarf.close()
+			rawf.close()
 
 
 if __name__ == '__main__':
