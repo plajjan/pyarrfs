@@ -152,10 +152,7 @@ class Pyarr(fuse.Fuse):
             self.fd = 0
 
         def read(self, length, offset):
-            # this really isn't a solution, it means seeking in small files works
-            # but it's just unbearable for large files... we need a proper seek!
-            self.file = self.rf.open(self.rar_path)
-            self.file.read(offset)
+            self.file.seek(offset)
             return self.file.read(length)
 
         def release(self, flags):
