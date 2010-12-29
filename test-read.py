@@ -98,7 +98,7 @@ class PyarrCheck(unittest.TestCase):
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
 			self.verify_read_sequential(rar_file, raw_file)
 			self.verify_read_from_offset(rar_file, raw_file, 3)
-			self.verify_read_random(rar_file, raw_file)
+			self.verify_read_random_from_start(rar_file, raw_file)
 
 	def verify_read_sequential(self, rar_file, raw_file):
 		file_size = os.path.getsize(raw_file)
@@ -125,7 +125,7 @@ class PyarrCheck(unittest.TestCase):
 		rarf.close()
 		rawf.close()
 
-	def verify_read_random(self, rar_file, raw_file):
+	def verify_read_random_from_start(self, rar_file, raw_file):
 		file_size = os.path.getsize(raw_file)
 		rarf = open(rar_file, 'r')
 		rawf = open(raw_file, 'r')
@@ -142,9 +142,6 @@ class PyarrCheck(unittest.TestCase):
 				byte = 0
 				read_bytes = file_size
 
-			rawf.seek(byte)
-			rarf.seek(byte)
-#			print "Offset %10d: RAW - RAR: %s %s" % ( byte, rawf.read(read_bytes), str(rarf.read(read_bytes)) )
 			rawf.seek(byte)
 			rarf.seek(byte)
 			self.assertEqual(rarf.read(read_bytes), rawf.read(read_bytes), 'mismatch in random read')
