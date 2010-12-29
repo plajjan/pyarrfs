@@ -30,6 +30,23 @@ class PyarrCheck(unittest.TestCase):
 		except:
 			pass
 
+		filedata = [
+				[ 'test1',
+					'this is testfile1 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla\n' ],
+				[ 'test2',
+					'crap crap crap crap\n' ]
+				]
+		filedata.append(['test3', self.generate_content(200000)])
+		self.files = []
+		for entry in filedata:
+			self.files.append(entry[0])
+
+		self.create_test_files(filedata)
+
+		self.uncompressed_rar_archive = 'testarchive1.rar'
+		self.create_uncompressed_rar_archive('testarchive1.rar', self.files)
+
+
 	def mkdir(self, path):
 		if not os.path.exists(path):
 			os.mkdir(path)
@@ -76,25 +93,8 @@ class PyarrCheck(unittest.TestCase):
 
 
 	def test_sequential_read(self):
-		filedata = []
-#		filedata = [
-#				[ 'test1',
-#					'this is testfile1 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla\n' ],
-#				[ 'test2',
-#					'crap crap crap crap\n' ]
-#				]
-#		filedata.append(['test3', self.generate_content(200000)])
-		filedata.append(['test3', self.generate_content_code(200000)])
-#		filedata.append(['test3', self.generate_content(200000)])
-		files = []
-		for entry in filedata:
-			files.append(entry[0])
-
-		self.create_test_files(filedata)
-		rar_archive = 'testarchive1.rar'
-		self.create_uncompressed_rar_archive('testarchive1.rar', files)
-		for file in files:
-			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, rar_archive, file))
+		for file in self.files:
+			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
 			self.verify_read_sequential(rar_file, raw_file)
 			self.verify_read_from_offset(rar_file, raw_file, 3)
