@@ -144,6 +144,9 @@ class Pyarr(fuse.Fuse):
 
     class PyarrFile(object):
         def __init__(self, path, flags, *mode):
+            # TODO: evaluate what direct_io / keep_cache does
+            self.direct_io = False
+            self.keep_cache = False
             m = re.match('(.*\.rar)/(.+)', path)
             self.rar_file = m.group(1)
             self.rar_path = m.group(2)
