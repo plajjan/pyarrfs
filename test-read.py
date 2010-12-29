@@ -122,20 +122,11 @@ class PyarrCheck(unittest.TestCase):
 		file_size = os.path.getsize(raw_file)
 		rarf = open(rar_file, 'r')
 		rawf = open(raw_file, 'r')
-		read_bytes = 10
 		for i in xrange(0, 10000):
-			# get random number
-			rb = random.randrange(0, file_size-10)
-			# align on 10 char boundary
-			byte = rb - ((rb + 10) % 10)
-			# make exception if test file is really small
-			if file_size <= 10:
-				byte = 0
-				read_bytes = file_size
-
+			byte = random.randrange(0, file_size)
 			rawf.seek(byte)
 			rarf.seek(byte)
-			self.assertEqual(rarf.read(read_bytes), rawf.read(read_bytes), 'mismatch in random read')
+			self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
 		rarf.close()
 		rawf.close()
 
