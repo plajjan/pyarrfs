@@ -60,6 +60,7 @@ class Pyarr(fuse.Fuse):
     def access(self, path, mode):
         dPrint("access -- " + path)
         # FIXME: When is this really used?
+        return
         if mode == os.W_OK:
             return -EACCES
         if not os.access("." + path, mode):
