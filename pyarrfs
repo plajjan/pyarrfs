@@ -58,11 +58,16 @@ class Pyarr(fuse.Fuse):
 
 
     def access(self, path, mode):
+        """Returns whether a user has access to performing 
+        """
         dPrint("access -- " + path)
-        # FIXME: When is this really used?
-        return
+
+        # test for write access, we don't to writes, so no axx
         if mode == os.W_OK:
             return -EACCES
+        # allow the rest
+        # FIXME: do more granular access control, based on RAR file?
+        return
         if not os.access("." + path, mode):
             return -EACCES
 
