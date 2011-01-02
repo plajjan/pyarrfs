@@ -121,18 +121,26 @@ class Pyarr(fuse.Fuse):
     # doesn't need changes in yarrfs compatibility mode
     def readdir(self, path, offset):
         dPrint("readdir -- path: " + str(path) + "  offset: " + str(offset) )
-        yield fuse.Direntry('.')
-        yield fuse.Direntry('..')
+        dirent = [ '.', '..' ]
 
         if re.match('.*\.rar$', path):
             dPrint("readdir: on rar archive, using rarfile")
             rf = rarfile.RarFile(path, 'r', None, None, False)
             for e in rf.namelist():
-                yield fuse.Direntry(str(e))
+                dirent.append(str(e))
         else:
             dPrint("readdir: normal dir, using os.listdir()")
+            try:
+                os.listdir("." + path)
+            except:
+                return
+
             for e in os.listdir("." + path):
-                yield fuse.Direntry(e)
+                dirent.append(e)
+
+        for e in dirent:
+            yield fuse.Direntry(e)
+
 
     def readlink(self, path):
         dPrint("readlink -- " + path)
