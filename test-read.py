@@ -66,7 +66,6 @@ class PyarrCheck(unittest.TestCase):
 		os.chdir(self.testarchivedir)
 		for file in files:
 			filepath = os.path.join(self.testfiledir, file)
-			#cmd = 'rar a -inul -ep ' + os.path.join(self.testarchivedir, rarfile) + ' ' + filepath
 			cmd = 'rar a -inul -ep -m0 ' + os.path.join(self.testarchivedir, rarfile) + ' ' + filepath
 			os.system(cmd)
 
