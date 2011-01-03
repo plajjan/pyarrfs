@@ -25,7 +25,8 @@ class PyarrCheck(unittest.TestCase):
 		self.mkdir(self.testfiledir)
 		self.mkdir(self.testarchivedir)
 
-#		os.system('fusermount -u ' + self.rarmntdir)
+		# make sure mount dir is empty
+		os.system('fusermount -q -z -u ' + self.rarmntdir)
 		try:
 			os.system(self.pyarrpath + ' ' + self.rarmntdir)
 		except:
@@ -71,7 +72,8 @@ class PyarrCheck(unittest.TestCase):
 
 
 	def tearDown(self):
-		os.system('fusermount -z -u ' + self.rarmntdir)
+		os.chdir(self.scriptdir)
+		os.system('fusermount -q -z -u ' + self.rarmntdir)
 		import shutil
 #		shutil.rmtree(self.testdir)
 
