@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import unittest
+import math
 import random
 import rarfile
 import os, sys
@@ -104,7 +105,9 @@ class PyarrCheck(unittest.TestCase):
 			rawf.close()
 
 
-	def test_read_random_from_start(self):
+	def test_seek_whence0_1(self):
+		"""Single seek from start (whence = 0) to random location in file
+		"""
 		for file in self.files:
 			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
@@ -116,12 +119,60 @@ class PyarrCheck(unittest.TestCase):
 				byte = random.randrange(0, file_size)
 				rawf.seek(byte)
 				rarf.seek(byte)
-				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 0) test 1')
 			rarf.close()
 			rawf.close()
 
 
-	def test_read_random_from_end(self):
+	def test_seek_whence0_2(self):
+		"""Two reads, first from start (whence = 0) to random byte in first half of file and second seek() from start (whence = 0) to second half of file
+		"""
+		for file in self.files:
+			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
+			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
+
+			file_size = os.path.getsize(raw_file)
+			rarf = open(rar_file, 'r')
+			rawf = open(raw_file, 'r')
+			for i in xrange(0, 10000):
+				byte = random.randrange(0, math.floor(file_size/2))
+				rawf.seek(byte)
+				rarf.seek(byte)
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 0) test 2')
+				byte = random.randrange(math.floor(file_size/2), file_size)
+				rawf.seek(byte)
+				rarf.seek(byte)
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 0) test 2')
+			rarf.close()
+			rawf.close()
+
+
+	def test_seek_whence0_3(self):
+		"""Two reads, first from start (whence = 0) to random byte in second half of file and second seek() from start (whence = 0) to first half of file
+		"""
+		for file in self.files:
+			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
+			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
+
+			file_size = os.path.getsize(raw_file)
+			rarf = open(rar_file, 'r')
+			rawf = open(raw_file, 'r')
+			for i in xrange(0, 10000):
+				byte = random.randrange(math.floor(file_size/2), file_size)
+				rawf.seek(byte)
+				rarf.seek(byte)
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 0) test 3')
+				byte = random.randrange(0, math.floor(file_size/2))
+				rawf.seek(byte)
+				rarf.seek(byte)
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 0) test 3')
+			rarf.close()
+			rawf.close()
+
+
+	def test_seek_whence2_1(self):
+		"""Single seek from end (whence = 2) to random location in file
+		"""
 		for file in self.files:
 			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
@@ -133,7 +184,7 @@ class PyarrCheck(unittest.TestCase):
 				byte = random.randrange(0, file_size)
 				rawf.seek(-byte, 2)
 				rarf.seek(-byte, 2)
-				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in random read')
+				self.assertEqual(rarf.read(1), rawf.read(1), 'mismatch in seek (whence = 2) test 1')
 			rarf.close()
 			rawf.close()
 
