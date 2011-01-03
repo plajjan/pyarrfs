@@ -26,8 +26,7 @@
 #
 
 import os, sys
-from errno import *
-from stat import *
+import errno
 import fcntl
 import re
 import stat
@@ -101,7 +100,11 @@ class Pyarr(fuse.Fuse):
 
             original_stat = os.lstat("." + rar_file)
             rf = rarfile.RarFile(rar_file, 'r', None, None, False)
-            rfi = rf.getinfo(rar_path)
+            try:
+                rfi = rf.getinfo(rar_path)
+            except:
+                # FIXME: add DEBUG log entry
+                return -errno.ENOENT
 
             fake_stat = fuse.Stat()
             fake_stat.st_mode = stat.S_IFREG | 0444
