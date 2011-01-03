@@ -62,12 +62,15 @@ class Pyarr(fuse.Fuse):
         """
         dPrint("access -- " + path)
 
-        # test for write access, we don't to writes, so no axx
+        # test for write access, PyarrFS is incapable of do writes, so no axx
         if mode == os.W_OK:
             return -EACCES
+
         # allow the rest
         # FIXME: do more granular access control, based on RAR file?
         return
+
+        # this only works for files not inside a rar archive
         if not os.access("." + path, mode):
             return -EACCES
 
