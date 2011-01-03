@@ -95,6 +95,8 @@ class PyarrCheck(unittest.TestCase):
 
 
 	def test_read_sequential(self):
+		"""Read the entire file sequentially from start
+		"""
 		for file in self.files:
 			rar_file = os.path.normpath(os.path.join(self.rarmntdir, '.' + self.testarchivedir, self.uncompressed_rar_archive, file))
 			raw_file = os.path.normpath(os.path.join(self.testfiledir, file))
