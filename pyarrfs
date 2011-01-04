@@ -114,7 +114,6 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_uid = original_stat.st_uid
             fake_stat.st_gid = original_stat.st_gid
             fake_stat.st_size = rfi.file_size
-            fake_stat.st_atime = original_stat.st_atime
 
             import datetime
             (rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second) = rfi.date_time
