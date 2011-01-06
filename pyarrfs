@@ -38,8 +38,7 @@ import logging
 import logging.handlers
 
 # log settings
-# FIXME: adjust log format to something better
-log_format = "%(asctime)-15s %(message)s"
+log_format = "%(levelname)-8s %(message)s"
 # TODO: allow log-level to be set with option on startup
 #       -d should automatically set level to logging.DEBUG
 log_level = logging.WARNING
