@@ -239,6 +239,10 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
     server = Pyarr(version="PyarrFS 0.1",
                  usage=usage)
 
+    # TODO: what does multithreaded really mean?
+    #       just run many requests in parallel? We have no real dependancies
+    #       between calls so we could probably enable this to increase
+    #       throughput in environments with lots of simultaneous requests
     server.multithreaded = False
     server.parse(values=server, errex=1)
 
