@@ -34,21 +34,51 @@ import stat
 import fuse
 import rarfile
 
+import logging
+import logging.handlers
+
+# log settings
+# FIXME: adjust log format to something better
+log_format = "%(asctime)-15s %(message)s"
+# TODO: allow log-level to be set with option on startup
+#       -d should automatically set level to logging.DEBUG
+log_level = logging.WARNING
+# uncomment for debug
+#log_level = logging.DEBUG
+log_destinations = {}
+# uncomment the following for debug output to stdout
+# TODO: only output to STDOUT/STDERR if -f option is set, ie pyarrfs should
+#       be run in foreground, or -d as in debug
+#log_destinations['stdout'] = 1
+# uncomment the following for debug output to syslog
+# TODO: allow syslog loging to be enabled with option on startup
+log_destinations['syslog'] = 1
+
+logger = logging.getLogger()
+logger.setLevel(log_level)
+log_format = logging.Formatter(log_format)
+
+if log_destinations.has_key('stdout'):
+    log_stream = logging.StreamHandler()
+    log_stream.setFormatter(log_format)
+    logger.addHandler(log_stream)
+
+if log_destinations.has_key('syslog') or 1==1:
+    log_syslog = logging.handlers.SysLogHandler(address = '/dev/log')
+    log_syslog.setFormatter(log_format)
+    logger.addHandler(log_syslog)
+
+
 fuse.fuse_python_api = (0, 2)
 
 fuse.feature_assert('stateful_files', 'has_init')
 
-import syslog
-# debug print
-def dPrint(message):
-    debug = 0
-    if debug is not None and debug > 0:
-        syslog.syslog(message)
 
 class Pyarr(fuse.Fuse):
     def __init__(self, *args, **kw):
         fuse.Fuse.__init__(self, *args, **kw)
         self.root = '/'
+        logger.info("init!")
 
     def fsinit(self):
         os.chdir(self.root)
@@ -59,7 +89,7 @@ class Pyarr(fuse.Fuse):
     def access(self, path, mode):
         """Returns whether a user has access to performing 
         """
-        dPrint("access -- " + path)
+        logger.info("access -- " + path)
 
         # test for write access, PyarrFS is incapable of do writes, so no axx
         if mode == os.W_OK:
@@ -74,9 +104,9 @@ class Pyarr(fuse.Fuse):
             return -EACCES
 
     def getattr(self, path):
-        dPrint("getattr -- " + str(path))
+        logger.info("getattr -- " + str(path))
         if re.match('.*\.rar$', path):
-            dPrint("getattr: on rar archive for path " + str(path))
+            logging.debug("getattr: on rar archive for path " + str(path))
             original_stat = os.lstat("." + path)
             fake_stat = fuse.Stat()
             fake_stat.st_mode = stat.S_IFDIR | 0755
@@ -89,11 +119,11 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_atime = original_stat.st_atime
             fake_stat.st_mtime = original_stat.st_mtime
             fake_stat.st_ctime = original_stat.st_ctime
-            dPrint("getattr: returning fake_stat for " + str(path))
+            logging.debug("getattr: returning fake_stat for " + str(path))
             return fake_stat
 
         elif re.match('.*\.rar/.+', path):
-            dPrint("getattr: we need to check inside rar archive for path " + str(path))
+            logging.debug("getattr: we need to check inside rar archive for path " + str(path))
             m = re.match('(.*\.rar)/(.+)', path)
             rar_file = m.group(1)
             rar_path = m.group(2)
@@ -121,25 +151,25 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_atime = int(rft_time.strftime('%s'))
             fake_stat.st_mtime = int(rft_time.strftime('%s'))
             fake_stat.st_ctime = int(rft_time.strftime('%s'))
-            dPrint("getattr: returning fake_stat for " + str(rar_path) + " inside rar " + str(rar_file))
+            logger.debug("getattr: returning fake_stat for " + str(rar_path) + " inside rar " + str(rar_file))
             return fake_stat
      
-        dPrint("getattr: returning normal os.lstat() for path " + str(path))
+        logger.debug("getattr: returning normal os.lstat() for path " + str(path))
         return os.lstat("." + path)
 
     # get a directory listing
     # doesn't need changes in yarrfs compatibility mode
     def readdir(self, path, offset):
-        dPrint("readdir -- path: " + str(path) + "  offset: " + str(offset) )
+        logger.info("readdir -- path: " + str(path) + "  offset: " + str(offset) )
         dirent = [ '.', '..' ]
 
         if re.match('.*\.rar$', path):
-            dPrint("readdir: on rar archive, using rarfile")
+            logger.debug("readdir: on rar archive, using rarfile")
             rf = rarfile.RarFile(path, 'r', None, None, False)
             for e in rf.namelist():
                 dirent.append(str(e))
         else:
-            dPrint("readdir: normal dir, using os.listdir()")
+            logger.debug("readdir: normal dir, using os.listdir()")
             try:
                 os.listdir("." + path)
             except:
@@ -153,11 +183,11 @@ class Pyarr(fuse.Fuse):
 
 
     def readlink(self, path):
-        dPrint("readlink -- " + path)
+        logger.info("readlink -- " + path)
         return os.readlink("." + path)
 
     def statfs(self):
-        dPrint("statfs -- " + path)
+        logger.info("statfs -- " + path)
         return os.statvfs(".")
 
 
