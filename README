@@ -1,19 +1,5 @@
-
-                      PyarrFS - a RAR reading file system
-================================================================================
-
-PyarrFS is a FUSE based file system to access the content of RAR archives as if
-they were just normal files and directories. PyarrFS owes technically to FUSE
-and rarfile, while the idea originates out of YarrFS - a similar file system
-written a few years back my a colleague (and based on my idea).
-
 This code was inspired by the xmp.py example written by Jeff Epler and Csaba
 Henk. Thank you!
 
 Thanks to the folks who wrote FUSE and thanks to Marko Kreen for putting
 together rarfile!
-
-
-LICENSE
--------
-GNU GPL, see COPYING
