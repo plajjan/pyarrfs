@@ -20,6 +20,7 @@ setup(
     scripts = ['bin/pyarrfs'],
     packages = ['pyarrfs'],
     keywords = ['rar', 'fuse'],
+    requires = ['rarfile'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: End Users/Desktop',
