@@ -1,5 +1,5 @@
-                      PyarrFS - a RAR reading file system
-================================================================================
+PyarrFS - a RAR reading file system
+===================================
 
 PyarrFS is a FUSE based file system to access the content of RAR archives as if
 they were just normal files and directories. PyarrFS owes technically to FUSE
@@ -11,8 +11,3 @@ Henk. Thank you!
 
 Thanks to the folks who wrote FUSE and thanks to Marko Kreen for putting
 together rarfile!
-
-
-LICENSE
--------
-MIT license, see COPYING
