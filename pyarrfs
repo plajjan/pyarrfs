@@ -12,12 +12,18 @@ import errno
 import fcntl
 import re
 import stat
+import logging
+import logging.handlers
 
 import fuse
 import rarfile
 
-import logging
-import logging.handlers
+__version__         = '0.5.0'
+__author__          = 'Kristian Larsson'
+__author_email__    = 'kristian@spritelink.net'
+__license__         = 'MIT'
+__url__             = 'http://labs.spritelink.net/pyarrfs'
+
 
 # log settings
 log_format = "%(levelname)-8s %(message)s"
