@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+#
+# PyarrFS - a RAR reading file system
+# Copyright (c) 2010, 2011 Kristian Larsson <kristian@spritelink.net>
+#
+# This file is license under the X11/MIT license, please see the file COPYING
+# distributed with PyarrFS for more details.
+#
+
+
+import sys
+
+try:
+    import pyarrfs.pyarrfs
+except ImportError, e:
+    print e
+    print 'To run an uninstalled copy of pyarrfs,'
+    print 'launch pyarrfs.py in the top directory'
+else:
+    try:
+        pyarrfs.pyarrfs.main()
+    except KeyboardInterrupt:
+        pass
+    sys.exit(0)

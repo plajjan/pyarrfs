@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
+# PyarrFS - a RAR reading file system
+# Copyright (c) 2010, 2011 Kristian Larsson <kristian@spritelink.net>
+#
 # This file is license under the X11/MIT license, please see the file COPYING
 # distributed with PyarrFS for more details.
-#
-# Check out http://labs.spritelink.net/pyarrfs for the latest version of this
-# software.
 #
 
 import os, sys
