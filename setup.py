@@ -17,7 +17,8 @@ setup(
     license = pyarrfs.__license__,
     author_email = pyarrfs.__author_email__,
     url = pyarrfs.__url__,
-    scripts = ['pyarrfs'],
+    scripts = ['bin/pyarrfs'],
+    packages = ['pyarrfs'],
     keywords = ['rar', 'fuse'],
     classifiers = [
         'Development Status :: 4 - Beta',
