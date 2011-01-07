@@ -74,7 +74,7 @@ class Pyarr(fuse.Fuse):
 
         # test for write access, PyarrFS is incapable of do writes, so no axx
         if mode == os.W_OK:
-            return -EACCES
+            return -errno.EACCES
 
         # allow the rest
         # FIXME: do more granular access control, based on RAR file?
@@ -82,7 +82,7 @@ class Pyarr(fuse.Fuse):
 
         # this only works for files not inside a rar archive
         if not os.access("." + path, mode):
-            return -EACCES
+            return -errno.EACCES
 
     def getattr(self, path):
         logger.info("getattr -- " + str(path))
@@ -93,6 +93,7 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_mode = stat.S_IFDIR | 0755
             fake_stat.st_ino = 0
             fake_stat.st_dev = 0
+            fake_stat.st_rdev = 0
             fake_stat.st_nlink = 2
             fake_stat.st_uid = original_stat.st_uid
             fake_stat.st_gid = original_stat.st_gid
@@ -121,10 +122,13 @@ class Pyarr(fuse.Fuse):
             fake_stat.st_mode = stat.S_IFREG | 0444
             fake_stat.st_ino = 0
             fake_stat.st_dev = 0
+            fake_stat.st_rdev = 0
             fake_stat.st_nlink = 1
             fake_stat.st_uid = original_stat.st_uid
             fake_stat.st_gid = original_stat.st_gid
             fake_stat.st_size = rfi.file_size
+            fake_stat.st_blocks = (fake_stat.st_size + 511) / 512
+            fake_stat.st_blksize = 4096
 
             import datetime
             (rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second) = rfi.date_time
