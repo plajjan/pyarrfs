@@ -27,34 +27,7 @@ __url__             = 'http://labs.spritelink.net/pyarrfs'
 
 # log settings
 log_format = "%(levelname)-8s %(message)s"
-# TODO: allow log-level to be set with option on startup
-#       -d should automatically set level to logging.DEBUG
-log_level = logging.WARNING
-# uncomment for debug
-#log_level = logging.DEBUG
-log_destinations = {}
-# uncomment the following for debug output to stdout
-# TODO: only output to STDOUT/STDERR if -f option is set, ie pyarrfs should
-#       be run in foreground, or -d as in debug
-#log_destinations['stdout'] = 1
-# uncomment the following for debug output to syslog
-# TODO: allow syslog loging to be enabled with option on startup
-log_destinations['syslog'] = 1
-
 logger = logging.getLogger()
-logger.setLevel(log_level)
-log_format = logging.Formatter(log_format)
-
-if log_destinations.has_key('stdout'):
-    log_stream = logging.StreamHandler()
-    log_stream.setFormatter(log_format)
-    logger.addHandler(log_stream)
-
-if log_destinations.has_key('syslog') or 1==1:
-    log_syslog = logging.handlers.SysLogHandler(address = '/dev/log')
-    log_syslog.setFormatter(log_format)
-    logger.addHandler(log_syslog)
-
 
 fuse.fuse_python_api = (0, 2)
 
@@ -63,9 +36,13 @@ fuse.feature_assert('stateful_files', 'has_init')
 
 class Pyarr(fuse.Fuse):
     def __init__(self, *args, **kw):
-        fuse.Fuse.__init__(self, *args, **kw)
-        self.root = '/'
         logger.info("init!")
+
+        fuse.Fuse.__init__(self, *args, **kw)
+
+        self.debug = False
+        self.foreground = False
+        self.root = '/'
 
     def fsinit(self):
         os.chdir(self.root)
@@ -238,8 +215,34 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
     #       Looks like it needs PyarrFile to be locked, what's the point then?
     server.multithreaded = False
 
+    server.parser.add_option('-r', '--root', dest='root', metavar="PATH", default=server.root, help="mirror filesystem from under PATH [default: %default]")
+    server.parser.add_option('-D', '--pydebug', action='store_true', dest='pydebug', default=False, help="enable debug for just PyarrFS (not FUSE) (implies -f)")
     server.parse(values=server, errex=1)
 
+    # always log to syslog
+    log_syslog = logging.handlers.SysLogHandler(address = '/dev/log')
+    log_syslog.setFormatter(logging.Formatter(log_format))
+    log_syslog.setLevel(logging.WARNING)
+    logger.addHandler(log_syslog)
+
+    opts = {}
+    # FIXME: why doesn't optdict work?
+    for o in server.parser.fuse_args.optlist:
+        opts[o] = True
+
+    if server.pydebug:
+        server.parser.fuse_args.modifiers['foreground'] = True
+
+    if server.parser.fuse_args.modifiers['foreground'] or opts.has_key('debug') or server.pydebug:
+        log_stream = logging.StreamHandler()
+        log_stream.setFormatter(logging.Formatter("%(asctime)s: " + log_format))
+        log_stream.setLevel(logging.DEBUG)
+        if opts.has_key('debug') or server.pydebug:
+            # FIXME: this isn't working, why? we only get WARNING messages
+            log_stream.setLevel(logging.DEBUG)
+        logger.addHandler(log_stream)
+
+    # and go!
     server.main()
 
 
