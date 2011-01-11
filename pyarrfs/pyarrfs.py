@@ -18,7 +18,7 @@ import logging.handlers
 import fuse
 import rarfile
 
-__version__         = '0.5.0'
+__version__         = '0.6.0'
 __author__          = 'Kristian Larsson'
 __author_email__    = 'kristian@spritelink.net'
 __license__         = 'MIT'

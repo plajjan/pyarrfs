@@ -1,3 +1,9 @@
+Version 0.6.0 (2011-01-07)
+--------------------------
+Command line option parsing implemented somewhat. Logging configuration is
+improved by the integration with command line options and the root dir can be
+set, although it so far has no effect ;)
+
 Version 0.5.0 (2011-01-07)
 --------------------------
 First version released, previous to this, pyarrfs was only available via git
