@@ -1,2 +1,8 @@
 Q: Why is this FAQ empty?
 A: Because noone asked anything yet.
+
+Q: How fast is PyarrFS?
+A: That depends on your computer :) The author has achieved 90MB/s and while IO bound, that consumed the better part of a 2.4GHz XEON core.
+
+Q: Is PyarrFS multithreaded?
+A: Nope, not yet. I don't know the implications of enabling it, if you do, please do tell.
