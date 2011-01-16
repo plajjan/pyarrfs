@@ -41,8 +41,10 @@ class Pyarr(fuse.Fuse):
         fuse.Fuse.__init__(self, *args, **kw)
 
         self.debug = False
+        self.pydebug = False
         self.foreground = False
         self.root = '/'
+
 
     def fsinit(self):
         os.chdir(self.root)
