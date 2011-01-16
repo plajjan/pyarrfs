@@ -185,11 +185,14 @@ class Pyarr(fuse.Fuse):
             # not just .rar files but code assumes it is always a rar file and
             # so it is unable to work with normal files
             # FIXME: other .rar file names? Case-sensitive?
-            m = re.match('(.*\.rar)/(.+)', path)
-            self.rar_file = m.group(1)
-            self.rar_path = m.group(2)
-            self.rf = rarfile.RarFile(self.rar_file, 'r', None, None, False)
-            self.file = self.rf.open(self.rar_path)
+            m = re.match(r'(.*\.rar)/(.+)', path)
+            if m is not None:   # rar file!
+                self.rar_file = m.group(1)
+                self.rar_path = m.group(2)
+                self.rf = rarfile.RarFile('.' + self.rar_file, 'r', None, None, False)
+                self.file = self.rf.open(self.rar_path)
+            else:
+                self.file = open('.' + path)
             self.fd = 0
 
         def read(self, length, offset):
