@@ -181,9 +181,7 @@ class Pyarr(fuse.Fuse):
             # about it, which would be typical for a networked file system.
             # That's not the case with PyarrFS so we enable it.
             self.keep_cache = True
-            # TODO: *embarrassing*, PyarrFile is initiated for all files and
-            # not just .rar files but code assumes it is always a rar file and
-            # so it is unable to work with normal files
+
             # FIXME: other .rar file names?
             m = re.match(r'(.*\.rar)/(.+)', path, re.IGNORECASE)
             if m is not None:   # rar file!
@@ -193,6 +191,7 @@ class Pyarr(fuse.Fuse):
                 self.file = self.rf.open(self.rar_path)
             else:
                 self.file = open('.' + path)
+            # FIXME: is this needed?
             self.fd = 0
 
         def read(self, length, offset):
