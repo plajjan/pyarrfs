@@ -191,8 +191,6 @@ class Pyarr(fuse.Fuse):
                 self.file = self.rf.open(self.rar_path)
             else:
                 self.file = open('.' + path)
-            # FIXME: is this needed?
-            self.fd = 0
 
         def read(self, length, offset):
             self.file.seek(offset)
