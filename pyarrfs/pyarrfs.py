@@ -184,8 +184,8 @@ class Pyarr(fuse.Fuse):
             # TODO: *embarrassing*, PyarrFile is initiated for all files and
             # not just .rar files but code assumes it is always a rar file and
             # so it is unable to work with normal files
-            # FIXME: other .rar file names? Case-sensitive?
-            m = re.match(r'(.*\.rar)/(.+)', path)
+            # FIXME: other .rar file names?
+            m = re.match(r'(.*\.rar)/(.+)', path, re.IGNORECASE)
             if m is not None:   # rar file!
                 self.rar_file = m.group(1)
                 self.rar_path = m.group(2)
