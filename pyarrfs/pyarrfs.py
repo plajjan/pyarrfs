@@ -66,14 +66,14 @@ class Pyarr(fuse.Fuse):
         return
 
         # this only works for files not inside a rar archive
-        if not os.access("." + path, mode):
+        if not os.access('.' + path, mode):
             return -errno.EACCES
 
     def getattr(self, path):
         logger.info("getattr -- " + str(path))
         if re.match('.*\.rar$', path):
             logging.debug("getattr: on rar archive for path " + str(path))
-            original_stat = os.lstat("." + path)
+            original_stat = os.lstat('.' + path)
             fake_stat = fuse.Stat()
             fake_stat.st_mode = stat.S_IFDIR | 0755
             fake_stat.st_ino = 0
@@ -95,8 +95,8 @@ class Pyarr(fuse.Fuse):
             rar_file = m.group(1)
             rar_path = m.group(2)
 
-            original_stat = os.lstat("." + rar_file)
-            rf = rarfile.RarFile(rar_file, 'r', None, None, False)
+            original_stat = os.lstat('.' + rar_file)
+            rf = rarfile.RarFile('.' + rar_file, 'r', None, None, False)
             try:
                 rfi = rf.getinfo(rar_path)
             except:
@@ -125,7 +125,7 @@ class Pyarr(fuse.Fuse):
             return fake_stat
      
         logger.debug("getattr: returning normal os.lstat() for path " + str(path))
-        return os.lstat("." + path)
+        return os.lstat('.' + path)
 
     # get a directory listing
     # doesn't need changes in yarrfs compatibility mode
@@ -135,17 +135,17 @@ class Pyarr(fuse.Fuse):
 
         if re.match('.*\.rar$', path):
             logger.debug("readdir: on rar archive, using rarfile")
-            rf = rarfile.RarFile(path, 'r', None, None, False)
+            rf = rarfile.RarFile('.' + path, 'r', None, None, False)
             for e in rf.namelist():
                 dirent.append(str(e))
         else:
             logger.debug("readdir: normal dir, using os.listdir()")
             try:
-                os.listdir("." + path)
+                os.listdir('.' + path)
             except:
                 return
 
-            for e in os.listdir("." + path):
+            for e in os.listdir('.' + path):
                 dirent.append(e)
 
         for e in dirent:
@@ -154,11 +154,11 @@ class Pyarr(fuse.Fuse):
 
     def readlink(self, path):
         logger.info("readlink -- " + path)
-        return os.readlink("." + path)
+        return os.readlink('.' + path)
 
     def statfs(self):
         logger.info("statfs -- " + path)
-        return os.statvfs(".")
+        return os.statvfs('.')
 
 
     class PyarrFile(object):
