@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# vim: et ts=4 :
 #
 # PyarrFS - a RAR reading file system
 # Copyright (c) 2010, 2011 Kristian Larsson <kristian@spritelink.net>
@@ -67,14 +68,14 @@ class Pyarr(fuse.Fuse):
 
 
     def fsinit(self):
+        """Called once for initialising things after FUSE itself has been brought up
+        """
         os.chdir(self.root)
 
 
 
-
-
     def access(self, path, mode):
-        """Returns whether a user has access to performing 
+        """Returns whether a user has access to performing certain operations
         """
         logger.info("access -- " + path)
 
@@ -90,7 +91,11 @@ class Pyarr(fuse.Fuse):
         if not os.access('.' + path, mode):
             return -errno.EACCES
 
+
+
     def getattr(self, path):
+        """FS equivalent of stat - returns attributes for object at path
+        """
         logger.info("getattr -- " + str(path))
         if isRarFilePath(path):
             logging.debug("getattr: on rar archive for path " + str(path))
@@ -146,9 +151,10 @@ class Pyarr(fuse.Fuse):
         logger.debug("getattr: returning normal os.lstat() for path " + str(path))
         return os.lstat('.' + path)
 
-    # get a directory listing
-    # doesn't need changes in yarrfs compatibility mode
+
     def readdir(self, path, offset):
+        """readdir - return directory listing
+        """
         logger.info("readdir -- path: " + str(path) + "  offset: " + str(offset) )
         dirent = [ '.', '..' ]
 
@@ -171,16 +177,32 @@ class Pyarr(fuse.Fuse):
             yield fuse.Direntry(e)
 
 
+
     def readlink(self, path):
+        """ path is a symbolic link and readlink returns where it points too
+
+            Symbolic links are not supported within rar files and so we will
+            never find one there, thus this is just a wrapper for the normal os
+            call readlink().
+        """
         logger.info("readlink -- " + path)
         return os.readlink('.' + path)
 
+
+
     def statfs(self):
+        # TODO: what is this used for? ;)
         logger.info("statfs -- " + path)
         return os.statvfs('.')
 
 
+
     class PyarrFile(object):
+        """ Class representing a file opened somewhere in a PyarrFS file system
+
+            This class is used both for non-rar files as well as rar files and
+            thus needs to check what kind of file we're dealing with.
+        """
         def __init__(self, path, flags, *mode):
             # Enabling direct_io disables the kernels page cache.
             # Since the content of our RAR files should be pretty stable, we do
@@ -208,17 +230,26 @@ class Pyarr(fuse.Fuse):
             else:
                 self.file = open('.' + path)
 
+
         def read(self, length, offset):
+            """ read length amount of data from a file and from a given offset
+            """
             self.file.seek(offset)
             return self.file.read(length)
 
+
         def release(self, flags):
+            """ release, or close, a file
+            """
             self.file.close()
+
 
 
     def main(self, *a, **kw):
         self.file_class = self.PyarrFile
         return fuse.Fuse.main(self, *a, **kw)
+
+
 
 
 def main():
@@ -274,6 +305,3 @@ if __name__ == '__main__':
     main()
 
 
-#
-# vim: et ts=4 :
-#
