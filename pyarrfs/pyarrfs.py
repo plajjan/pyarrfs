@@ -34,6 +34,25 @@ fuse.fuse_python_api = (0, 2)
 fuse.feature_assert('stateful_files', 'has_init')
 
 
+def isRarFilePath(path):
+    if re.match(r'.*\.rar$', path):
+        return True
+    return False
+
+
+def isRarDirPath(path):
+    (a, b) = rarDirSplit(path)
+    if a is False or b is False:
+        return False
+    return True
+
+def rarDirSplit(path):
+    m = re.match(r'(.*\.rar)/(.+)', path, re.IGNORECASE)
+    if m is not None:
+        return m.group(1), m.group(2)
+    return False, False
+
+
 class Pyarr(fuse.Fuse):
     def __init__(self, *args, **kw):
         logger.info("init!")
@@ -48,6 +67,7 @@ class Pyarr(fuse.Fuse):
 
     def fsinit(self):
         os.chdir(self.root)
+
 
 
 
@@ -71,7 +91,7 @@ class Pyarr(fuse.Fuse):
 
     def getattr(self, path):
         logger.info("getattr -- " + str(path))
-        if re.match('.*\.rar$', path):
+        if isRarFilePath(path):
             logging.debug("getattr: on rar archive for path " + str(path))
             original_stat = os.lstat('.' + path)
             fake_stat = fuse.Stat()
@@ -89,11 +109,9 @@ class Pyarr(fuse.Fuse):
             logging.debug("getattr: returning fake_stat for " + str(path))
             return fake_stat
 
-        elif re.match('.*\.rar/.+', path):
+        elif isRarDirPath(path):
             logging.debug("getattr: we need to check inside rar archive for path " + str(path))
-            m = re.match('(.*\.rar)/(.+)', path)
-            rar_file = m.group(1)
-            rar_path = m.group(2)
+            (rar_file, rar_path) = rarDirSplit(path)
 
             original_stat = os.lstat('.' + rar_file)
             rf = rarfile.RarFile('.' + rar_file, 'r', None, None, False)
@@ -133,7 +151,7 @@ class Pyarr(fuse.Fuse):
         logger.info("readdir -- path: " + str(path) + "  offset: " + str(offset) )
         dirent = [ '.', '..' ]
 
-        if re.match('.*\.rar$', path):
+        if isRarFilePath(path):
             logger.debug("readdir: on rar archive, using rarfile")
             rf = rarfile.RarFile('.' + path, 'r', None, None, False)
             for e in rf.namelist():
@@ -182,13 +200,10 @@ class Pyarr(fuse.Fuse):
             # That's not the case with PyarrFS so we enable it.
             self.keep_cache = True
 
-            # FIXME: other .rar file names?
-            m = re.match(r'(.*\.rar)/(.+)', path, re.IGNORECASE)
-            if m is not None:   # rar file!
-                self.rar_file = m.group(1)
-                self.rar_path = m.group(2)
-                self.rf = rarfile.RarFile('.' + self.rar_file, 'r', None, None, False)
-                self.file = self.rf.open(self.rar_path)
+            if isRarDirPath(path):
+                (rar_file, rar_path) = rarDirSplit(path)
+                self.rf = rarfile.RarFile('.' + rar_file, 'r', None, None, False)
+                self.file = self.rf.open(rar_path)
             else:
                 self.file = open('.' + path)
 
