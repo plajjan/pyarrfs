@@ -85,9 +85,17 @@ class Pyarr(fuse.Fuse):
 
         # allow the rest
         # FIXME: do more granular access control, based on RAR file?
-        return
+        if isRarFilePath(path): # it's a rar file
+            # writing is already disallowed and for directories we allow both
+            # reading and execution for all users, ie all other modes
+            return
 
-        # this only works for files not inside a rar archive
+        if isRarDirPath(path):  # inside rar archive
+            # we allow access to everything (except write, which has already
+            # been disallowed) inside rar files
+            return
+
+        # files not inside of a rar archive, do passthrough to os.access()
         if not os.access('.' + path, mode):
             return -errno.EACCES
 
