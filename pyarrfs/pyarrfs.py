@@ -35,7 +35,7 @@ fuse.feature_assert('stateful_files', 'has_init')
 
 
 def isRarFilePath(path):
-    if re.match(r'.*\.rar$', path):
+    if re.match(r'.*\.rar$', path, re.IGNORECASE):
         return True
     return False
 
@@ -50,6 +50,7 @@ def rarDirSplit(path):
     m = re.match(r'(.*\.rar)/(.+)', path, re.IGNORECASE)
     if m is not None:
         return m.group(1), m.group(2)
+    # FIXME: should raise exception instead?
     return False, False
 
 
