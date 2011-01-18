@@ -79,7 +79,7 @@ class Pyarr(fuse.Fuse):
         """
         logger.info("access -- " + path)
 
-        # test for write access, PyarrFS is incapable of do writes, so no axx
+        # test for write access, PyarrFS is incapable of doing writes, so no axx
         if mode == os.W_OK:
             return -errno.EACCES
 
@@ -97,7 +97,7 @@ class Pyarr(fuse.Fuse):
         """FS equivalent of stat - returns attributes for object at path
         """
         logger.info("getattr -- " + str(path))
-        if isRarFilePath(path):
+        if isRarFilePath(path): # is a rarfile
             logging.debug("getattr: on rar archive for path " + str(path))
             original_stat = os.lstat('.' + path)
             fake_stat = fuse.Stat()
@@ -115,7 +115,7 @@ class Pyarr(fuse.Fuse):
             logging.debug("getattr: returning fake_stat for " + str(path))
             return fake_stat
 
-        elif isRarDirPath(path):
+        elif isRarDirPath(path):    # is inside a rar file
             logging.debug("getattr: we need to check inside rar archive for path " + str(path))
             (rar_file, rar_path) = rarDirSplit(path)
 
@@ -148,8 +148,10 @@ class Pyarr(fuse.Fuse):
             logger.debug("getattr: returning fake_stat for " + str(rar_path) + " inside rar " + str(rar_file))
             return fake_stat
      
+        # normal file outside of any rar file
         logger.debug("getattr: returning normal os.lstat() for path " + str(path))
         return os.lstat('.' + path)
+
 
 
     def readdir(self, path, offset):
