@@ -10,4 +10,4 @@ tgz:
 	python setup.py sdist
 
 clean:
-	rm -rf *.pyc build dist MANIFEST
+	rm -rf *.pyc pyarrfs/*.pyc build dist MANIFEST
