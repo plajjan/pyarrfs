@@ -1,5 +1,3 @@
-Have PyarrFS root be relative from a specified directory instead of from /
-
 It seems access time when entering a rar-directory are quite long, investigate more.
 
 Stacked RAR-files, ie one rar file within another, does it work? I suspect no.. investigate!
