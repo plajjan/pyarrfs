@@ -1,4 +1,4 @@
-Version 0.7.0 (2011-01-XX)
+Version 0.7.0 (2011-02-02)
 --------------------------
  * Reading of normal files! Previously, PyarrFS was only able to read rar files and would try to handle normal files just like it would a rar file, which would obviously not work. That's now fixed!
  * Relative root. The root from which PyarrFS should work and mount in the mount directory can now be specified.
