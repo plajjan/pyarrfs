@@ -16,8 +16,20 @@ import stat
 import logging
 import logging.handlers
 
-import fuse
-import rarfile
+try:
+    import fuse
+except:
+    print >> sys.stderr, "You do not have the Python module for FUSE lib installed"
+    import os.path
+    if os.path.exists('/etc/debian_version'):
+        print >> sys.stderr, "HINT: sudo apt-get install python-fuse"
+    sys.exit(1)
+try:
+    import rarfile
+except:
+    print >> sys.stderr, "You do not have the Python module for rarlib installed"
+    print >> sys.stderr, "Please note that you need a non-standard version of rarfile available from \nhttp://git.spritelink.net/gitweb?p=rarfile.git"
+    sys.exit(1)
 
 __version__         = '0.7.0'
 __author__          = 'Kristian Larsson'
