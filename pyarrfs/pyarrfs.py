@@ -222,6 +222,11 @@ class Pyarr(fuse.Fuse):
     class PyarrFile(object):
         """ Class representing a file opened somewhere in a PyarrFS file system
 
+            Returning a class to represent a file will result in stateful
+            handling of the file from FUSE. The instantiated object will
+            persist over the entire period the file is open and any state held
+            within will thus also persist.
+
             This class is used both for non-rar files as well as rar files and
             thus needs to check what kind of file we're dealing with.
         """
