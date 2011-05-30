@@ -5,6 +5,14 @@ import math
 import random
 import rarfile
 import os, sys
+import subprocess
+
+try:
+	subprocess.Popen("rar", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = True)
+except:
+	print >> sys.stderr, "You do not have the 'rar' binary, please install!"
+	sys.exit(1)
+
 
 
 class PyarrCheck(unittest.TestCase):
@@ -18,7 +26,7 @@ class PyarrCheck(unittest.TestCase):
 		self.rarmntdir = os.path.join(self.testdir, 'rarmnt')
 		self.testfiledir = os.path.join(self.testdir, 'testfiles')
 		self.testarchivedir = os.path.join(self.testdir, 'testarchives')
-		self.pyarrpath = '/home/kll/kod/pyarrfs/pyarrfs'
+		self.pyarrpath = self.scriptdir + '/../pyarrfs.py'
 
 		self.mkdir(self.testdir)
 		self.mkdir(self.rarmntdir)
