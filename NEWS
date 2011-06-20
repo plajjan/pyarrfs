@@ -1,3 +1,7 @@
+Version 0.7.1 (2011-06-20)
+--------------------------
+ * Not much of a PyarrFS change, but our required changes to rarfile is now no longer local but have been pushed and accepted into rarfile 2.3. This means we no longer require the hacked rarfile version but instead depend on the regular rarfile - awesome!
+
 Version 0.7.0 (2011-02-02)
 --------------------------
  * Reading of normal files! Previously, PyarrFS was only able to read rar files and would try to handle normal files just like it would a rar file, which would obviously not work. That's now fixed!

@@ -12,5 +12,6 @@ Henk. Thank you!
 Thanks to the folks who wrote FUSE and thanks to Marko Kreen for putting
 together rarfile!
 
-NOTE: Please do note how this application depends on a non-standard version of
-      rarfile, please get it from git.spritelink.net!
+NOTE: Please do note that this application depends on rarfile 2.3 OR on my
+	  non-standard version of rarfile, which you can get from
+	  git.spritelink.net!
