@@ -31,7 +31,7 @@ except:
     print >> sys.stderr, "Please note that you need a non-standard version of rarfile available from \nhttp://git.spritelink.net/gitweb?p=rarfile.git"
     sys.exit(1)
 
-__version__         = '0.7.0'
+__version__         = '0.7.1'
 __author__          = 'Kristian Larsson'
 __author_email__    = 'kristian@spritelink.net'
 __license__         = 'MIT'
