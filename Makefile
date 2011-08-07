@@ -11,3 +11,6 @@ tgz:
 
 clean:
 	rm -rf *.pyc pyarrfs/*.pyc build dist MANIFEST
+
+upload:
+	python setup.py sdist upload
