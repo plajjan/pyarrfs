@@ -161,6 +161,8 @@ class Pyarr(fuse.Fuse):
 
             import datetime
             (rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second) = rfi.date_time
+            if rft_second > 59:
+                rft_second = 59
             rft_time = datetime.datetime(rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second)
             fake_stat.st_atime = int(rft_time.strftime('%s'))
             fake_stat.st_mtime = int(rft_time.strftime('%s'))
