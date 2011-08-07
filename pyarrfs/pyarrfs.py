@@ -287,7 +287,7 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
 
 """ + fuse.Fuse.fusage
 
-    server = Pyarr(version="PyarrFS 0.1",
+    server = Pyarr(version="PyarrFS " + __version__,
                  usage=usage)
 
     # TODO: what does multithreaded really mean?
