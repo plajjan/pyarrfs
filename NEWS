@@ -1,3 +1,7 @@
+Version 0.7.2 (2011-08-07)
+--------------------------
+ * Implemented workaround for bug in rarfile where it returns a date with seconds > 59. Also notified Marko Kreen (author of rarfile) of the bug.
+
 Version 0.7.1 (2011-06-20)
 --------------------------
  * Not much of a PyarrFS change, but our required changes to rarfile is now no longer local but have been pushed and accepted into rarfile 2.3. This means we no longer require the hacked rarfile version but instead depend on the regular rarfile - awesome!
