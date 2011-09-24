@@ -28,7 +28,7 @@ try:
     import rarfile
 except:
     print >> sys.stderr, "You do not have the Python module for rarlib installed"
-    print >> sys.stderr, "Please note that you need a non-standard version of rarfile available from \nhttp://git.spritelink.net/gitweb?p=rarfile.git"
+    print >> sys.stderr, "Please use your distributions package manager or easy_install to get it. Note\nthat you need version 2.3 or later. To install using easy_install:\n  easy_install rarfile"
     sys.exit(1)
 
 __version__         = '0.7.2'
