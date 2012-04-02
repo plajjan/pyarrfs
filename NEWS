@@ -1,3 +1,7 @@
+Version 0.8.0 (2012-04-02)
+--------------------------
+ * Support for disabling compressed archives to avoid slowdowns.
+
 Version 0.7.2 (2011-08-07)
 --------------------------
  * Implemented workaround for bug in rarfile where it returns a date with seconds > 59. Also notified Marko Kreen (author of rarfile) of the bug.

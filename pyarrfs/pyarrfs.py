@@ -2,7 +2,7 @@
 # vim: et ts=4 :
 #
 # PyarrFS - a RAR reading file system
-# Copyright (c) 2010, 2011 Kristian Larsson <kristian@spritelink.net>
+# Copyright (c) 2010-2012 Kristian Larsson <kristian@spritelink.net>
 #
 # This file is licensed under the X11/MIT license, please see the file COPYING,
 # distributed with PyarrFS for more details.
@@ -33,7 +33,7 @@ except:
 
 rarfile.NEED_COMMENTS = 0
 
-__version__         = '0.7.2'
+__version__         = '0.8.0'
 __author__          = 'Kristian Larsson'
 __author_email__    = 'kristian@spritelink.net'
 __license__         = 'MIT'
