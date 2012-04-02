@@ -1,0 +1,9 @@
+Install
+=======
+
+PyarrFS depends upon rarfile v2.3 or later. Use your regular package manager to
+install it or get it from pypi.
+
+PyarrFS can be installed from pypi as well or using the accompanying setup.py,
+just type:
+  python setup.py install
