@@ -11,3 +11,8 @@ Henk. Thank you!
 
 Thanks to the folks who wrote FUSE and thanks to Marko Kreen for putting
 together rarfile!
+
+
+PyarrFS is developed on Ubuntu and is thus known to work on that platform
+together with fairly recent versions of Debian. Other Linux platforms are also
+likely to work. Have you tried it on a different platform, please do tell :)
