@@ -27,9 +27,11 @@ except:
 try:
     import rarfile
 except:
-    print >> sys.stderr, "You do not have the Python module for rarlib installed"
+    print >> sys.stderr, "You do not have the Python module for the library rarfile installed"
     print >> sys.stderr, "Please use your distributions package manager or easy_install to get it. Note\nthat you need version 2.3 or later. To install using easy_install:\n  easy_install rarfile"
     sys.exit(1)
+
+rarfile.NEED_COMMENTS = 0
 
 __version__         = '0.7.2'
 __author__          = 'Kristian Larsson'
@@ -73,10 +75,12 @@ class Pyarr(fuse.Fuse):
 
         fuse.Fuse.__init__(self, *args, **kw)
 
+        self.no_compressed = False
         self.debug = False
         self.pydebug = False
         self.foreground = False
         self.root = '/'
+
 
 
     def fsinit(self):
@@ -119,6 +123,15 @@ class Pyarr(fuse.Fuse):
         logger.info("getattr -- " + str(path))
         if isRarFilePath(path): # is a rarfile
             logging.debug("getattr: on rar archive for path " + str(path))
+
+            # if we run with the no_compressed option and files in a rar file
+            # are compressed, we just present it as a ordinary directory
+            rf = rarfile.RarFile(path)
+            for n in rf.namelist():
+                inf = rf.getinfo(n)
+                if self.no_compressed and int(chr(inf.compress_type)) > 0:
+                    return os.lstat('.' + path)
+
             original_stat = os.lstat('.' + path)
             fake_stat = fuse.Stat()
             fake_stat.st_mode = stat.S_IFDIR | 0755
@@ -298,6 +311,7 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
     server.multithreaded = False
 
     server.parser.add_option('-r', '--root', dest='root', metavar="PATH", default=server.root, help="mirror filesystem from under PATH [default: %default]")
+    server.parser.add_option('-n', '--no-compressed', action='store_true', dest='no_compressed', default=False, help="Disable compressed files")
     server.parser.add_option('-D', '--pydebug', action='store_true', dest='pydebug', default=False, help="enable debug for just PyarrFS (not FUSE) (implies -f)")
     server.parse(values=server, errex=1)
 
