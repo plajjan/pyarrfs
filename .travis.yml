@@ -9,5 +9,5 @@ install:
  - virtualenv /home/vagrant/virtualenv/python$TRAVIS_PYTHON_VERSION --system-site-packages
  - python setup.py install
 script:
- - find .
+ - find . -iname "*rarfile*"
  - cd t; ./test-read.py
