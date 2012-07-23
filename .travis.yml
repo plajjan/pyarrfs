@@ -5,4 +5,4 @@ before_install:
  - sudo apt-get install python-fuse
 install: 
  - python setup.py build
-script: cd t; ./test-read.py
+script: cd t; "PYTHONPATH=/usr/lib/python2.7/dist-packages/ ./test-read.py"
