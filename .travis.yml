@@ -4,7 +4,7 @@ python:
 before_install:
  - sudo apt-get -y install python-fuse
 install: 
- - virtualenv /home/vagrant/virtualenv/python$TRAVIS_PYTHON_VERSION --system-site-packages
  - pip install rarfile
+ - virtualenv /home/vagrant/virtualenv/python$TRAVIS_PYTHON_VERSION --system-site-packages
  - python setup.py build
 script: cd t; ./test-read.py
