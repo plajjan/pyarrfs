@@ -1,10 +1,11 @@
 language: python
 python:
   - 2.7
+env: PYTHONPATH=/usr/lib/python2.7/dist-packages
 before_install:
  - sudo apt-get install python-fuse
  - dpkg --listfiles python-fuse
 install: 
  - python -c "import sys; print sys.path"
  - python setup.py build
-script: cd t; "PYTHONPATH=/usr/lib/python2.7/dist-packages/ ./test-read.py"
+script: cd t; ./test-read.py
