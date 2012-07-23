@@ -3,6 +3,7 @@ python:
   - 2.7
 before_install:
  - sudo apt-get install python-fuse
+ - dpkg --listfiles python-fuse
 install: 
  - python setup.py build
 script: cd t; "PYTHONPATH=/usr/lib/python2.7/dist-packages/ ./test-read.py"
