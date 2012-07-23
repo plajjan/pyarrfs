@@ -16,6 +16,7 @@ import stat
 import logging
 import logging.handlers
 
+import fuse
 try:
     import fuse
 except:
