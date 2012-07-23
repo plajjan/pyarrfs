@@ -4,5 +4,5 @@ python:
 before_install:
  - sudo apt-get install python-fuse
 install: 
- - python setup.py install
+ - python setup.py build
 script: cd t; ./test-read.py
