@@ -22,13 +22,21 @@ except:
     print >> sys.stderr, "You do not have the Python module for FUSE lib installed"
     import os.path
     if os.path.exists('/etc/debian_version'):
+        print >> sys.stderr, "This appears to be a Debian system in which case you should be able to run:"
         print >> sys.stderr, "HINT: sudo apt-get install python-fuse"
     sys.exit(1)
 try:
     import rarfile
 except:
-    print >> sys.stderr, "You do not have the Python module for the library rarfile installed"
-    print >> sys.stderr, "Please use your distributions package manager or easy_install to get it. Note\nthat you need version 2.3 or later. To install using easy_install:\n  easy_install rarfile"
+    print >> sys.stderr, "You do not have the Python module for the library rarfile installed."
+    if os.path.exists('/etc/debian_version'):
+        print >> sys.stderr, "This appears to be a Debian system in which case you should be able to run:"
+        if not os.path.exists('/usr/bin/pypi-install'):
+            print >> sys.stderr, "HINT: sudo apt-get install python-stdeb"
+        print >> sys.stderr, "HINT: sudo pypi-install rarfile"
+    else:
+        print >> sys.stderr, "Please use your distributions package manager or easy_install to get it. Note\nthat you need version 2.3 or later."
+        print >> sys.stderr, "HINT: sudo easy_install rarfile"
     sys.exit(1)
 
 rarfile.NEED_COMMENTS = 0
