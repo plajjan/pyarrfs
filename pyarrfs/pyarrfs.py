@@ -134,7 +134,7 @@ class Pyarr(fuse.Fuse):
 
             # if we run with the no_compressed option and files in a rar file
             # are compressed, we just present it as a ordinary directory
-            rf = rarfile.RarFile(path)
+            rf = rarfile.RarFile('.' + path)
             for n in rf.namelist():
                 inf = rf.getinfo(n)
                 if self.no_compressed and int(chr(inf.compress_type)) > 0:
