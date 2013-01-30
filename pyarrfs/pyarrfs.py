@@ -41,7 +41,7 @@ except:
 
 rarfile.NEED_COMMENTS = 0
 
-__version__         = '0.8.0'
+__version__         = '0.8.1'
 __author__          = 'Kristian Larsson'
 __author_email__    = 'kristian@spritelink.net'
 __license__         = 'MIT'

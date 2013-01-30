@@ -1,3 +1,7 @@
+Version 0.8.1 (2013-01-30)
+--------------------------
+ * Fix incorrect relative file access. This was a problem on Debian 7.0 and probably other platforms.
+
 Version 0.8.0 (2012-04-02)
 --------------------------
  * Support for disabling compressed archives to avoid slowdowns.
