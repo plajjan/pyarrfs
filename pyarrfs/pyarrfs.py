@@ -134,11 +134,12 @@ class Pyarr(fuse.Fuse):
 
             # if we run with the no_compressed option and files in a rar file
             # are compressed, we just present it as a ordinary directory
-            rf = rarfile.RarFile('.' + path)
-            for n in rf.namelist():
-                inf = rf.getinfo(n)
-                if self.no_compressed and int(chr(inf.compress_type)) > 0:
-                    return os.lstat('.' + path)
+            if self.no_compressed:
+                rf = rarfile.RarFile('.' + path)
+                for n in rf.namelist():
+                    inf = rf.getinfo(n)
+                    if self.no_compressed and int(chr(inf.compress_type)) > 0:
+                        return os.lstat('.' + path)
 
             original_stat = os.lstat('.' + path)
             fake_stat = fuse.Stat()
@@ -351,6 +352,10 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
         logger.addHandler(log_stream)
 
     # and go!
+    if server.parser.fuse_args.mountpoint is None:
+        print >> sys.stderr, "ERROR: No mount point specified!\n"
+        server.parser.print_help()
+        sys.exit(1)
     server.main()
 
 
