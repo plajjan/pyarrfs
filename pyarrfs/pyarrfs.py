@@ -182,6 +182,7 @@ class Pyarr(fuse.Fuse):
 
             import datetime
             (rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second) = rfi.date_time
+            # fix for broken rar archives
             if rft_second > 59:
                 rft_second = 59
             rft_time = datetime.datetime(rft_year, rft_month, rft_day, rft_hour, rft_minute, rft_second)
@@ -198,7 +199,7 @@ class Pyarr(fuse.Fuse):
 
 
     def readdir(self, path, offset):
-        """readdir - return directory listing
+        """ readdir - return directory listing
         """
         logger.info("readdir -- path: " + str(path) + "  offset: " + str(offset) )
         dirent = [ '.', '..' ]
@@ -210,6 +211,7 @@ class Pyarr(fuse.Fuse):
                 dirent.append(str(e))
         else:
             logger.debug("readdir: normal dir, using os.listdir()")
+            # TODO: why do we need to try this? weird way to handle it
             try:
                 os.listdir('.' + path)
             except:
@@ -230,14 +232,16 @@ class Pyarr(fuse.Fuse):
             never find one there, thus this is just a wrapper for the normal os
             call readlink().
         """
-        logger.info("readlink -- " + path)
         return os.readlink('.' + path)
 
 
 
     def statfs(self):
-        # TODO: what is this used for? ;)
-        logger.info("statfs -- " + path)
+        """ statfs pass-through function
+
+            statfs is called by df (and similar calls?). We do pass-through to
+            underlying filesystem as we don't really change anything.
+        """
         return os.statvfs('.')
 
 
