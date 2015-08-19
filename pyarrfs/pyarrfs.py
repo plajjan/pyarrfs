@@ -329,7 +329,11 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
     server.parse(values=server, errex=1)
 
     # always log to syslog
-    log_syslog = logging.handlers.SysLogHandler(address = '/dev/log')
+    if sys.platform == 'darwin':
+        log_syslog = logging.handlers.SysLogHandler(address = '/var/run/syslog')
+    else:
+        log_syslog = logging.handlers.SysLogHandler(address = '/dev/log')
+
     log_syslog.setFormatter(logging.Formatter(log_format))
     log_syslog.setLevel(logging.WARNING)
     logger.addHandler(log_syslog)
