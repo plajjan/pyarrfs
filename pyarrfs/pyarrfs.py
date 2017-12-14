@@ -25,6 +25,7 @@ except:
         print >> sys.stderr, "This appears to be a Debian system in which case you should be able to run:"
         print >> sys.stderr, "HINT: sudo apt-get install python-fuse"
     sys.exit(1)
+
 try:
     import rarfile
 except:
@@ -37,6 +38,18 @@ except:
     else:
         print >> sys.stderr, "Please use your distributions package manager or easy_install to get it. Note\nthat you need version 2.3 or later."
         print >> sys.stderr, "HINT: sudo easy_install rarfile"
+    sys.exit(1)
+
+try:
+    import xattr
+except
+    print >> sys.stderr, "You do not have the Python module for the library xattr installed."
+    if os.path.exists('/etc/debian_version'):
+        print >> sys.stderr, "This appears to be a Debian system in which case you should be able to run:"
+        print >> sys.stderr, "HINT: sudo apt-get install python-xattr"
+    else:
+        print >> sys.stderr, "Please use your distributions package manager or easy_install to get it."
+        print >> sys.stderr, "HINT: sudo easy_install xattr"
     sys.exit(1)
 
 rarfile.NEED_COMMENTS = 0
@@ -196,6 +209,26 @@ class Pyarr(fuse.Fuse):
         # normal file outside of any rar file
         logger.debug("getattr: returning normal os.lstat() for path " + str(path))
         return os.lstat('.' + path)
+
+
+
+    def getxattr(self, path, name, foo):
+        """Get extended attributes, we just try to pass shit through. This is
+        rather naive but seems to work for facl (tested by getfacl).
+        """
+        logger.info("getxattr -- path:{} xattr:{} foo:{}".format(path, name, foo))
+        if isRarDirPath(path):    # is inside a rar file
+            logging.debug("getxattr: we need to check inside rar archive for path " + str(path))
+            (rar_file, rar_path) = rarDirSplit(path)
+
+            logger.debug("getxattr: returning xattr for path " + str(rar_file))
+            xa = xattr.xattr('.' + rar_file)
+            return xa.get(name)
+
+        # normal file outside of any rar file
+        logger.debug("getxattr: returning xattr for path " + str(path))
+        xa = xattr.xattr('.' + path)
+        return xa.get(name)
 
 
 
