@@ -345,6 +345,7 @@ PyarrFS mirror the filesystem tree from some point on, allowing RAR archives to 
 
     if server.pydebug:
         server.parser.fuse_args.modifiers['foreground'] = True
+        logger.setLevel(logging.DEBUG)
 
     if server.parser.fuse_args.modifiers['foreground'] or opts.has_key('debug') or server.pydebug:
         log_stream = logging.StreamHandler()
