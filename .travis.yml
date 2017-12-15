@@ -2,7 +2,7 @@ language: python
 python:
   - 2.7
 install: 
- - pip install fuse-python
+ - apt-get -qy install python-fuse
  - pip install rarfile
  - python setup.py build
 script: cd t; ./test-read.py
