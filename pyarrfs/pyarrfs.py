@@ -42,7 +42,7 @@ except:
 
 try:
     import xattr
-except
+except:
     print >> sys.stderr, "You do not have the Python module for the library xattr installed."
     if os.path.exists('/etc/debian_version'):
         print >> sys.stderr, "This appears to be a Debian system in which case you should be able to run:"
