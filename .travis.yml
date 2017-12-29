@@ -2,8 +2,9 @@ sudo: required
 language: python
 python:
   - 2.7
-install: 
- - apt-get -qy install python-fuse
+before_install:
+ - sudo apt-get -qq update
+ - sudo apt-get -qy install python-fuse
  - pip install rarfile
  - python setup.py build
 script: cd t; ./test-read.py
