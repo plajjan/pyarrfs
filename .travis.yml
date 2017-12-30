@@ -4,7 +4,8 @@ python:
   - 2.7
 before_install:
  - sudo apt-get -qq update
- - sudo apt-get -qy install python-fuse
+ - sudo apt-get -y install python-fuse
+ - pip install fusepy
  - pip install rarfile
  - python setup.py build
 script: cd t; ./test-read.py
